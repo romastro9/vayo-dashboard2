@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vayo Smart Helmet - Universal OS</title>
+    <title>Vayo Smart Helmet - OS v4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -26,7 +26,6 @@
             background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
-            /* Allow scrolling on mobile, hide on desktop if fits */
             overflow-x: hidden;
             background-image: 
                 radial-gradient(circle at 15% 50%, rgba(0, 210, 211, 0.08) 0%, transparent 25%),
@@ -41,7 +40,7 @@
             position: sticky; top: 0; z-index: 100;
         }
         .logo { font-size: 22px; font-weight: 700; color: var(--primary); letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .logo i { font-size: 18px; animation: spin 10s linear infinite; }
+        .logo i { font-size: 18px; animation: spin 5s linear infinite; }
 
         .lang-switch button {
             background: transparent; border: 1px solid #333; color: var(--text-muted);
@@ -49,146 +48,169 @@
         }
         .lang-switch button.active { background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold; }
 
-        /* --- RESPONSIVE LAYOUT SYSTEM --- */
+        /* --- LAYOUT --- */
         .dashboard {
             display: grid;
-            /* Desktop Default: 3 Columns */
             grid-template-columns: 320px 1fr 320px;
             gap: 20px; padding: 20px;
-            height: calc(100vh - 70px); /* Fixed height on desktop */
+            height: calc(100vh - 70px);
             overflow: hidden;
         }
 
-        .column { 
-            display: flex; flex-direction: column; gap: 15px; 
-            overflow-y: auto; padding-right: 5px; /* Scroll inside columns on desktop */
-        }
+        .column { display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; }
         .column::-webkit-scrollbar { width: 4px; }
         .column::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
-        /* --- CARDS --- */
+        /* --- CARDS & ANIMATIONS --- */
         .card {
             background: var(--bg-panel); backdrop-filter: blur(12px);
             border-radius: 16px; padding: 15px;
             border: 1px solid rgba(255,255,255,0.08);
-            transition: 0.2s; position: relative;
+            transition: 0.2s; position: relative; overflow: hidden;
         }
         
+        /* Pulse Animation on Cards */
+        .card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(0,210,211,0.05) 0%, transparent 70%);
+            opacity: 0; transition: 0.5s; pointer-events: none;
+        }
+        .card:hover::after { opacity: 1; }
+        .card:hover { border-color: rgba(0, 210, 211, 0.4); box-shadow: 0 0 15px rgba(0, 210, 211, 0.1); }
+
         .card-header { display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         .val-large { font-size: 26px; font-weight: bold; }
-        .unit { font-size: 14px; color: var(--text-muted); font-weight: normal; }
 
-        /* --- CENTER STAGE --- */
+        /* --- CENTER STAGE (ENHANCED ANIMATION) --- */
         .center-stage { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             position: relative; 
         }
+
+        /* HUD Ring Animation */
+        .hud-ring {
+            position: absolute; width: 400px; height: 400px; border-radius: 50%;
+            border: 1px dashed rgba(0, 210, 211, 0.15);
+            animation: spin 30s linear infinite; pointer-events: none;
+        }
+        .hud-ring::before {
+            content: ''; position: absolute; top: -2px; left: 50%; width: 10px; height: 4px; 
+            background: var(--primary); box-shadow: 0 0 10px var(--primary);
+        }
+
+        .helmet-container { position: relative; width: 100%; max-width: 380px; height: 320px; z-index: 10; }
         
         .helmet-img {
-            width: 100%; max-width: 380px; height: 320px;
-            /* YOUR IMAGE FILE NAME */
+            width: 100%; height: 100%;
             background-image: url('វាយោ.png'); 
             background-size: contain; background-repeat: no-repeat; background-position: center;
             filter: drop-shadow(0 10px 40px rgba(0,210,211,0.15));
-            animation: float 6s ease-in-out infinite; z-index: 10;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Scanner Effect */
+        .scanner-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            box-shadow: 0 0 15px var(--primary);
+            animation: scan 3s ease-in-out infinite;
+            opacity: 0.7; pointer-events: none;
         }
 
         .status-badge {
-            background: rgba(0, 210, 211, 0.15); color: var(--primary);
+            background: rgba(0, 210, 211, 0.1); color: var(--primary);
             padding: 6px 18px; border-radius: 20px; border: 1px solid rgba(0, 210, 211, 0.3);
             font-size: 13px; font-weight: bold; letter-spacing: 1px; margin-top: 10px;
+            position: relative; overflow: hidden;
+        }
+        .status-badge::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 3s infinite;
         }
 
         /* --- CONTROLS --- */
         .control-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; /* 2 Columns */
-            gap: 12px; width: 100%; max-width: 400px; margin-top: 25px; 
+            display: grid; grid-template-columns: 1fr 1fr 1fr; /* 3 Columns */
+            gap: 12px; width: 100%; max-width: 450px; margin-top: 25px; 
         }
         .ctrl-btn {
-            background: rgba(255,255,255,0.05); border: none; color: #fff; padding: 18px 10px;
-            border-radius: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;
-            transition: 0.2s;
+            background: rgba(255,255,255,0.05); border: none; color: #fff; padding: 15px 5px;
+            border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;
+            transition: 0.2s; position: relative; overflow: hidden;
         }
-        .ctrl-btn i { font-size: 22px; color: var(--text-muted); transition: 0.2s; }
-        .ctrl-btn span { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-        
-        .ctrl-btn.active { background: rgba(0, 210, 211, 0.15); border: 1px solid var(--primary); }
-        .ctrl-btn.active i { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .ctrl-btn:active { transform: scale(0.95); }
+        .ctrl-btn.active { background: rgba(0, 210, 211, 0.15); border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(0,210,211,0.1); }
+        .ctrl-btn i { font-size: 20px; color: var(--text-muted); transition: 0.2s; }
+        .ctrl-btn.active i { color: var(--primary); }
+        .ctrl-btn span { font-size: 11px; color: var(--text-muted); }
         .ctrl-btn.active span { color: #fff; }
 
-        /* --- MUSIC PLAYER --- */
+        /* --- MUSIC PLAYER (SEEKABLE) --- */
         .music-card { border-top: 2px solid var(--accent); }
-        .song-title { font-size: 15px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; margin-top: 8px;}
-        .song-artist { font-size: 12px; color: #aaa; margin-bottom: 15px;}
-        .progress-bar { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 15px; cursor: pointer; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: width 0.3s; }
         
-        .player-controls { display: flex; justify-content: center; align-items: center; gap: 25px; }
+        /* Equalizer Animation */
+        .equalizer { display: flex; align-items: flex-end; gap: 3px; height: 20px; margin-bottom: 10px; opacity: 0.5; }
+        .bar { width: 4px; background: var(--accent); border-radius: 2px; animation: eq 1s ease-in-out infinite; }
+        .bar:nth-child(2) { animation-delay: 0.2s; } .bar:nth-child(3) { animation-delay: 0.4s; } .bar:nth-child(4) { animation-delay: 0.1s; } .bar:nth-child(5) { animation-delay: 0.3s; }
+        .music-active .equalizer { opacity: 1; }
+        .music-active .bar { animation-duration: 0.5s; background: var(--primary); }
+
+        .song-title { font-size: 15px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; }
+        .song-artist { font-size: 12px; color: #aaa; margin-bottom: 10px;}
+        
+        /* SEEK SLIDER (New) */
+        .seek-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11px; color: #888; margin-bottom: 10px; }
+        input[type=range].seek-slider {
+            -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; cursor: pointer;
+        }
+        input[type=range].seek-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent);
+        }
+
+        .player-controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
         .btn-music { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; transition: 0.2s; }
         .btn-music:hover { color: var(--accent); transform: scale(1.1); }
-        .btn-play { font-size: 40px; color: var(--accent); display: flex; align-items: center; justify-content: center; height: 50px; width: 50px;}
+        .btn-play { font-size: 36px; color: var(--accent); }
 
         /* --- PHONE CALL --- */
         .call-card { display: none; background: linear-gradient(135deg, #10ac84, #1dd1a1); border: none; animation: pulse 2s infinite; }
         .call-content { display: flex; align-items: center; justify-content: space-between; }
-        .btn-decline { background: #ff4757; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .btn-decline { background: #ff4757; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 16px; }
 
         /* SOS BUTTON */
         .btn-sos {
             background: linear-gradient(45deg, #eb2f06, #e55039);
-            color: white; border: none; padding: 18px; border-radius: 14px;
+            color: white; border: none; padding: 15px; border-radius: 12px;
             font-size: 16px; font-weight: bold; width: 100%; cursor: pointer;
-            margin-top: auto; box-shadow: 0 8px 20px rgba(235, 47, 6, 0.25);
+            margin-top: auto; box-shadow: 0 5px 15px rgba(235, 47, 6, 0.3);
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: transform 0.2s;
-        }
-        .btn-sos:active { transform: scale(0.95); }
-
-        /* --- MEDIA QUERIES (MOBILE MAGIC) --- */
-        @media (max-width: 1024px) {
-            body { overflow-y: auto; height: auto; } /* Allow full page scroll */
-            
-            .dashboard {
-                grid-template-columns: 1fr; /* Single column */
-                height: auto;
-                gap: 30px;
-                padding: 15px;
-                overflow: visible;
-            }
-
-            .column { overflow: visible; height: auto; }
-
-            /* REORDER: Put Helmet (Center) at the top on Mobile */
-            .center-stage { 
-                order: -1; 
-                margin-bottom: 20px;
-            }
-
-            .helmet-img { height: 260px; } /* Smaller image on mobile */
-            
-            .control-grid { margin-top: 15px; }
-            
-            /* Make controls bigger for touch */
-            .ctrl-btn { padding: 20px; }
-            .btn-sos { padding: 20px; font-size: 18px; margin-top: 20px; }
         }
 
-        /* Small Phones */
-        @media (max-width: 400px) {
-            .helmet-img { height: 220px; }
-            .val-large { font-size: 22px; }
-        }
-
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes scan { 0% { top: 0; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        @keyframes shine { 100% { left: 100%; } }
+        @keyframes eq { 0%, 100% { height: 4px; } 50% { height: 18px; } }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(29, 209, 161, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(29, 209, 161, 0); } 100% { box-shadow: 0 0 0 0 rgba(29, 209, 161, 0); } }
+
+        /* MOBILE */
+        @media (max-width: 1024px) {
+            body { overflow-y: auto; height: auto; }
+            .dashboard { grid-template-columns: 1fr; height: auto; gap: 30px; padding: 15px; overflow: visible; }
+            .column { overflow: visible; height: auto; }
+            .center-stage { order: -1; margin-bottom: 20px; }
+            .helmet-container { height: 260px; }
+            .hud-ring { width: 300px; height: 300px; }
+            .control-grid { grid-template-columns: 1fr 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo"><i class="fas fa-fan"></i> VAYO <span style="font-size: 12px; color: #aaa; margin-left: 8px;">MOBILE OS</span></div>
+        <div class="logo"><i class="fas fa-fan"></i> VAYO <span style="font-size: 12px; color: #aaa; margin-left: 8px;">OS v4.0</span></div>
         <div class="lang-switch">
             <button class="active" onclick="setLang('en')">EN</button>
             <button onclick="setLang('kh')">KH</button>
@@ -206,14 +228,6 @@
             </div>
 
             <div class="card">
-                <div class="card-header"><span data-i18n="aqi">Air Quality</span> <i class="fas fa-wind" style="color: var(--primary);"></i></div>
-                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                    <div><div class="val-large" style="color: var(--success);">12</div><small style="font-size: 11px;">PM2.5 (In)</small></div>
-                    <div style="text-align: right;"><div class="val-large" style="font-size: 20px; color: var(--danger);">145</div><small style="font-size: 11px;">PM2.5 (Out)</small></div>
-                </div>
-            </div>
-
-            <div class="card">
                 <div class="card-header"><span data-i18n="gps">Navigation</span> <i class="fas fa-location-arrow" style="color: var(--accent);"></i></div>
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
                     <div style="background: #222; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="color: #fff; font-size: 18px;"></i></div>
@@ -222,12 +236,15 @@
                         <small style="color: #888; font-size: 12px;">2.5 km to destination</small>
                     </div>
                 </div>
-                <div style="font-size: 26px; font-weight: bold; margin-top: 5px;">45 <span class="unit">km/h</span></div>
             </div>
         </div>
 
         <div class="center-stage">
-            <div class="helmet-img"></div>
+            <div class="hud-ring"></div>
+            <div class="helmet-container">
+                <div class="scanner-line"></div>
+                <div class="helmet-img"></div>
+            </div>
             <div class="status-badge" data-i18n="status">SYSTEM ONLINE</div>
 
             <div class="control-grid">
@@ -241,7 +258,13 @@
                     <i class="fas fa-lightbulb"></i> <span data-i18n="led">Lights</span>
                 </button>
                 <button class="ctrl-btn" onclick="simulateCall()">
-                    <i class="fas fa-phone"></i> <span>Test Call</span>
+                    <i class="fas fa-phone"></i> <span>Call Test</span>
+                </button>
+                <button class="ctrl-btn" onclick="toggleBtn(this)">
+                    <i class="fas fa-wave-square"></i> <span data-i18n="noise">Noise Cancel</span>
+                </button>
+                <button class="ctrl-btn" onclick="toggleBtn(this)">
+                    <i class="fas fa-video"></i> <span>Cam</span>
                 </button>
             </div>
         </div>
@@ -251,23 +274,31 @@
             <div class="card call-card" id="callCard">
                 <div class="call-content">
                     <div class="caller-info">
-                        <div style="font-size: 11px; color: rgba(255,255,255,0.9); font-weight: bold;">INCOMING CALL</div>
-                        <h4 style="font-size: 18px; margin-top: 2px;">012 999 888</h4>
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.9);">INCOMING CALL</div>
+                        <h4 style="font-size: 18px;">012 999 888</h4>
                     </div>
-                    <div style="display: flex; gap: 15px;">
-                        <button style="background: white; border: none; width: 40px; height: 40px; border-radius: 50%; color: #10ac84; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i class="fas fa-phone"></i></button>
+                    <div style="display: flex; gap: 10px;">
+                        <button style="background: white; border: none; width: 35px; height: 35px; border-radius: 50%; color: #10ac84;"><i class="fas fa-phone"></i></button>
                         <button class="btn-decline" onclick="endCall()"><i class="fas fa-phone-slash"></i></button>
                     </div>
                 </div>
             </div>
 
-            <div class="card music-card">
+            <div class="card music-card" id="musicCard">
                 <div class="card-header"><span data-i18n="media">Music</span> <i class="fas fa-music"></i></div>
                 
+                <div class="equalizer">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+
                 <div class="song-title" id="songTitle">Select a Song</div>
                 <div class="song-artist" id="songArtist">Vayo Audio</div>
                 
-                <div class="progress-bar"><div class="progress-fill" style="width: 0%;" id="progress"></div></div>
+                <div class="seek-container">
+                    <span id="currentTime">0:00</span>
+                    <input type="range" class="seek-slider" id="seekSlider" value="0" max="100">
+                    <span id="duration">0:00</span>
+                </div>
 
                 <div class="player-controls">
                     <button class="btn-music" onclick="prevSong()"><i class="fas fa-backward-step"></i></button>
@@ -280,26 +311,16 @@
             <div class="card">
                 <div class="card-header"><span data-i18n="filter">HEPA Filter</span> <span style="color: var(--success);">Good</span></div>
                 <div style="height: 5px; background: rgba(255,255,255,0.1); margin-top: 8px; border-radius: 5px;"><div style="width: 92%; background: #f1c40f; height: 100%; border-radius: 5px;"></div></div>
-                <small style="color: #aaa; margin-top: 8px; display: block; font-size: 12px;">92% Remaining</small>
             </div>
 
-            <div class="card">
-                <div class="card-header"><span data-i18n="climate">Climate</span></div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div class="val-large">25°C</div>
-                    <div style="font-size: 16px; display: flex; align-items: center; gap: 5px;"><i class="fas fa-droplet" style="color: #3498db;"></i> 50%</div>
-                </div>
-                <input type="range" style="width: 100%; margin-top: 15px; accent-color: var(--primary); height: 5px; background: #333; border-radius: 5px; appearance: none;" min="0" max="100">
-            </div>
-
-            <button class="btn-sos" onclick="alert('SOS SIGNAL SENT TO: +855 12 345 678')">
+            <button class="btn-sos" onclick="alert('SOS SENT')">
                 <i class="fas fa-triangle-exclamation"></i> <span data-i18n="sos">SOS EMERGENCY</span>
             </button>
         </div>
     </div>
 
     <script>
-        // --- PLAYLIST ---
+        // --- PLAYLIST (No Changes) ---
         const playlist = [
             { title: "YAB NIS YAB - DJ TU-MIX", artist: "DJ J.Y", file: "DJ TU-MIX - YAB NIS YAB - DJ J.Y.mp3" },
             { title: "Yob Sngat (Mashup)", artist: "TEPPISETH", file: "TEPPISETH - យប់ស្ងាត់_Masup_DJ TU-MIX.mp3" },
@@ -314,13 +335,16 @@
         const titleText = document.getElementById('songTitle');
         const artistText = document.getElementById('songArtist');
         const playBtn = document.getElementById('playBtn');
-        const progressBar = document.getElementById('progress');
+        const seekSlider = document.getElementById('seekSlider');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const musicCard = document.getElementById('musicCard');
 
         function loadSong(index) {
             titleText.innerText = playlist[index].title;
             artistText.innerText = playlist[index].artist;
             audio.src = playlist[index].file;
-            progressBar.style.width = '0%';
+            audio.load();
         }
         
         loadSong(0);
@@ -329,9 +353,11 @@
             if (isPlaying) {
                 audio.pause();
                 playBtn.innerHTML = '<i class="fas fa-circle-play"></i>';
+                musicCard.classList.remove('music-active');
             } else {
                 audio.play();
                 playBtn.innerHTML = '<i class="fas fa-circle-pause"></i>';
+                musicCard.classList.add('music-active');
             }
             isPlaying = !isPlaying;
         }
@@ -348,22 +374,34 @@
             if(isPlaying) audio.play();
         }
 
-        // Update Progress Bar
+        // --- NEW: SEEK BAR LOGIC ---
+        function formatTime(seconds) {
+            let min = Math.floor(seconds / 60);
+            let sec = Math.floor(seconds % 60);
+            if (sec < 10) sec = `0${sec}`;
+            return `${min}:${sec}`;
+        }
+
+        // Update Slider as music plays
         audio.addEventListener('timeupdate', () => {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressBar.style.width = `${progress}%`;
+            if(audio.duration) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                seekSlider.value = progress;
+                currentTimeEl.innerText = formatTime(audio.currentTime);
+                durationEl.innerText = formatTime(audio.duration);
+            }
         });
 
-        // --- FEATURES LOGIC ---
-        function simulateCall() {
-            document.getElementById('callCard').style.display = 'block';
-        }
-        function endCall() {
-            document.getElementById('callCard').style.display = 'none';
-        }
-        function toggleBtn(btn) {
-            btn.classList.toggle('active');
-        }
+        // Scrubbing (User drags slider)
+        seekSlider.addEventListener('input', () => {
+            const seekTime = (seekSlider.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        });
+
+        // --- UI FUNCTIONS ---
+        function simulateCall() { document.getElementById('callCard').style.display = 'block'; }
+        function endCall() { document.getElementById('callCard').style.display = 'none'; }
+        function toggleBtn(btn) { btn.classList.toggle('active'); }
 
         // --- LANGUAGE SYSTEM ---
         const dict = {
@@ -371,14 +409,16 @@
                 power: "Power", aqi: "Air Quality", gps: "Navigation",
                 status: "SYSTEM ONLINE",
                 auto_purify: "Purify", defogger: "Defog", led: "Lights",
-                media: "Music", filter: "HEPA Filter", climate: "Climate", sos: "SOS EMERGENCY",
+                noise: "Noise Cancel", // NEW
+                media: "Music", filter: "HEPA Filter", sos: "SOS EMERGENCY",
                 solar: "Solar Charging (+5W)"
             },
             kh: {
                 power: "ថាមពល", aqi: "គុណភាពខ្យល់", gps: "ផែនទី",
                 status: "ប្រព័ន្ធដំណើរការ",
                 auto_purify: "បន្សុទ្ធ", defogger: "បំបាត់អ័ព្ទ", led: "ភ្លើង",
-                media: "តន្ត្រី", filter: "តម្រង HEPA", climate: "ម៉ាស៊ីនត្រជាក់", sos: "សញ្ញាអាសន្ន",
+                noise: "កាត់បន្ថយសំឡេង", // NEW
+                media: "តន្ត្រី", filter: "តម្រង HEPA", sos: "សញ្ញាអាសន្ន",
                 solar: "សាកថ្មសូឡា (+5W)"
             }
         };
